@@ -28,7 +28,7 @@ class HIDUPSExporter(Exporter):
             mainloop.create_task(dev.mainloop())
 
     async def get_metrics(self, *args, **kwargs):
-        self.metrics = []
+        self.metrics = [super().get_metrics(*args, **kwargs)]
         for ups in self.ups_list:
             for param in ups.PARAMS:
                 self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels, logger=self.logger, _log_init=False))
