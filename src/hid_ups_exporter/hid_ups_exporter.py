@@ -3,6 +3,7 @@ JSON exporter class
 """
 
 from signal import signal, SIGHUP
+from asyncio import sleep
 
 from prometheus_exporter import Exporter
 from .ups_metric import UPSMetric
@@ -16,18 +17,26 @@ class HIDUPSExporter(Exporter):
     def __init__(self, *args, **kwargs):
         kwargs['listen_port'] = kwargs.pop('listen_port', 9808)
         super().__init__(*args, **kwargs)
-        self.ups_list = []
         signal(SIGHUP, lambda *args: self.init_devices())
 
     def init_devices(self):
+        self.logger.info("Initializing HID UPS devices.")
+        self.close_devices()
+        self.ups_list = []
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
             self.ups_list.append(dev)
             self.app.loop.create_task(dev.mainloop())
 
+    def close_devices(self):
+        if hasattr(self, 'ups_list'):
+            for ups in self.ups_list:
+                ups.close()
+
     async def get_metrics(self, *args, **kwargs):
         self.metrics = await super().get_metrics(*args, **kwargs)
-        if not self.ups_list:
+        if not getattr(self, 'ups_list', None):
             self.init_devices()
+            await sleep(5)
         for ups in self.ups_list:
             for param in ups.PARAMS:
                 self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels, logger=self.logger, _log_init=False))
