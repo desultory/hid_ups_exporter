@@ -21,11 +21,9 @@ class HIDUPSExporter(Exporter):
         self.init_devices()
 
     def init_devices(self):
-        from asyncio import get_event_loop
-        mainloop = get_event_loop()
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
             self.ups_list.append(dev)
-            mainloop.create_task(dev.mainloop())
+            self.app.loop.create_task(dev.mainloop())
 
     async def get_metrics(self, *args, **kwargs):
         self.metrics = [await super().get_metrics(*args, **kwargs)]
