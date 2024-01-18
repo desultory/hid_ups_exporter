@@ -18,8 +18,8 @@ classifiers = [
 ]
 dependencies = [
     "hid_ups >= 0.2.0",
-    "prometheus_exporter >= 0.8.0",
-    "zenlib >= 1.6.0"
+    "prometheus_exporter >= 0.12.1",
+    "zenlib >= 1.6.5"
 ]
 
 [project.scripts]

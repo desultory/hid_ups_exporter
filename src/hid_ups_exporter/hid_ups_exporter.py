@@ -2,6 +2,8 @@
 JSON exporter class
 """
 
+from signal import signal, SIGHUP
+
 from prometheus_exporter import Exporter
 from .ups_metric import UPSMetric
 from hid_ups import HIDUPS
@@ -13,9 +15,13 @@ class HIDUPSExporter(Exporter):
     Exporter for HID USB UPS devices
     """
     def __init__(self, *args, **kwargs):
-        kwargs['port'] = kwargs.pop('port', 9808)
+        kwargs['listen_port'] = kwargs.pop('listen_port', 9808)
         super().__init__(*args, **kwargs)
         self.ups_list = []
+        signal(SIGHUP, lambda *args: self.init_devices())
+        self.init_devices()
+
+    def init_devices(self):
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
             dev.start()
             self.ups_list.append(dev)
