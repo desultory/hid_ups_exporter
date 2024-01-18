@@ -26,7 +26,7 @@ class HIDUPSExporter(Exporter):
         mainloop = get_event_loop()
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
             self.ups_list.append(dev)
-            mainloop.run_untiil_complete(dev.mainloop())
+            mainloop.run_until_complete(dev.mainloop())
         self.generate_metrics(self.ups_list)
 
     @handle_plural
