@@ -18,7 +18,6 @@ class HIDUPSExporter(Exporter):
         super().__init__(*args, **kwargs)
         self.ups_list = []
         signal(SIGHUP, lambda *args: self.init_devices())
-        self.init_devices()
 
     def init_devices(self):
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
@@ -27,6 +26,8 @@ class HIDUPSExporter(Exporter):
 
     async def get_metrics(self, *args, **kwargs):
         self.metrics = [await super().get_metrics(*args, **kwargs)]
+        if not self.ups_list:
+            self.init_devices()
         for ups in self.ups_list:
             for param in ups.PARAMS:
                 self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels, logger=self.logger, _log_init=False))
