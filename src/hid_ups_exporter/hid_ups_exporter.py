@@ -22,9 +22,11 @@ class HIDUPSExporter(Exporter):
         self.init_devices()
 
     def init_devices(self):
+        from asyncio import get_event_loop
+        mainloop = get_event_loop()
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
-            dev.start()
             self.ups_list.append(dev)
+            mainloop.run_untiil_complete(dev.mainloop())
         self.generate_metrics(self.ups_list)
 
     @handle_plural
