@@ -25,7 +25,7 @@ class HIDUPSExporter(Exporter):
             self.app.loop.create_task(dev.mainloop())
 
     async def get_metrics(self, *args, **kwargs):
-        self.metrics = [await super().get_metrics(*args, **kwargs)]
+        self.metrics = await super().get_metrics(*args, **kwargs)
         if not self.ups_list:
             self.init_devices()
         for ups in self.ups_list:
