@@ -7,7 +7,6 @@ from signal import signal, SIGHUP
 from prometheus_exporter import Exporter
 from .ups_metric import UPSMetric
 from hid_ups import HIDUPS
-from zenlib.util import handle_plural
 
 
 class HIDUPSExporter(Exporter):
@@ -27,12 +26,13 @@ class HIDUPSExporter(Exporter):
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
             self.ups_list.append(dev)
             mainloop.create_task(dev.mainloop())
-        self.generate_metrics(self.ups_list)
 
-    @handle_plural
-    def generate_metrics(self, ups):
-        for param in ups.PARAMS:
-            self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels, logger=self.logger, _log_init=False))
+    async def get_metrics(self):
+        self.metrics = []
+        for ups in self.ups_list:
+            for param in ups.PARAMS:
+                self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels, logger=self.logger, _log_init=False))
+        return self.metrics
 
     def read_config(self):
         try:
