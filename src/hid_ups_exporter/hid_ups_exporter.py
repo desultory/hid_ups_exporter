@@ -33,10 +33,10 @@ class HIDUPSExporter(Exporter):
     def close_devices(self):
         """ Stop the HID device and its running loop """
         if hasattr(self, 'ups_list'):
+            for task in self.ups_tasks:
+                await task.cancel()
             for ups in self.ups_list:
                 ups.close()
-            for task in self.ups_tasks:
-                task.cancel()
 
     async def get_metrics(self, *args, **kwargs):
         self.metrics = await super().get_metrics(*args, **kwargs)
