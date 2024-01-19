@@ -17,7 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "hid_ups >= 0.6.2",
+    "hid_ups >= 0.6.4",
     "prometheus_exporter >= 0.12.4",
     "zenlib >= 1.6.5"
 ]
