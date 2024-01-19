@@ -30,7 +30,8 @@ class HIDUPSExporter(Exporter):
     def close_devices(self):
         if hasattr(self, 'ups_list'):
             for ups in self.ups_list:
-                ups.close()
+                self.logger.info("Closing HID UPS device: %s", ups.ups)
+                ups.ups.close()
 
     async def get_metrics(self, *args, **kwargs):
         self.metrics = await super().get_metrics(*args, **kwargs)
