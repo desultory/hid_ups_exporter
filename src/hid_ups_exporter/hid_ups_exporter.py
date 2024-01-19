@@ -25,7 +25,7 @@ class HIDUPSExporter(Exporter):
         self.ups_list = []
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
             self.ups_list.append(dev)
-            self.app.loop.create_task(dev.mainloop())
+            self.app.loop.create_task(dev.mainloop(), exception_handler=self.logger.exception)
 
     def close_devices(self):
         if hasattr(self, 'ups_list'):
