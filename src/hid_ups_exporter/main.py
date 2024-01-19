@@ -20,7 +20,7 @@ def main():
         kwargs['listen_port'] = args.port
     if args.address:
         kwargs['listen_ip'] = args.address
-    if args.max_failures:
+    if args.max_fails:
         kwargs['max_fails'] = args.max_fails
 
     exporter = HIDUPSExporter(**kwargs)
