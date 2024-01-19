@@ -40,7 +40,10 @@ class HIDUPSExporter(Exporter):
         if not getattr(self, 'ups_list', None):
             self.init_devices()
             await sleep(5)
-        for ups in self.ups_list:
+        for ups in self.ups_list.copy():
+            if not hasattr(ups, 'ups'):
+                self.logger.warning("Removing UPS: %s", ups)
+                self.ups_list.remove(ups)
             self.logger.debug("Adding metrics for UPS %s", ups)
             for param in ups.PARAMS:
                 self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels,
