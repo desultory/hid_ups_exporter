@@ -41,6 +41,7 @@ class HIDUPSExporter(Exporter):
             self.init_devices()
             await sleep(5)
         for ups in self.ups_list:
+            self.logger.debug("Adding metrics for UPS %s", ups)
             for param in ups.PARAMS:
                 self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels, logger=self.logger, _log_init=False))
         return self.metrics
