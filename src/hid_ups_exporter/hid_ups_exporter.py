@@ -22,12 +22,9 @@ class HIDUPSExporter(Exporter):
         with self.init_lock:
             self.close_devices()
             self.ups_list = []
-            self.ups_tasks = []
             for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
                 self.ups_list.append(dev)
-                task = dev.mainloop()
-                self.ups_tasks.append(task)
-                self.app.loop.create_task(task)
+                self.app.loop.create_task(dev.mainloop())
 
     def close_devices(self):
         """ Stop the HID device and its running loop """
