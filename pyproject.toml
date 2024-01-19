@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hid_ups_exporter"
-version = "0.5.0"
+version = "0.5.1"
 authors = [
   { name="Desultory", email="dev@pyl.onl" },
 ]
@@ -17,7 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "hid_ups >= 0.6.1",
+    "hid_ups >= 0.6.2",
     "prometheus_exporter >= 0.12.4",
     "zenlib >= 1.6.5"
 ]
