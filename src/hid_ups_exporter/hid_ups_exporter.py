@@ -47,7 +47,7 @@ class HIDUPSExporter(Exporter):
             self.logger.debug("Adding metrics for UPS %s", ups)
             ups_metrics = []
             for param in ups.PARAMS:
-                if not getattr(ups, param, None):
+                if getattr(ups, param, None) is None:
                     self.logger.warning("[%s] UPS missing parameter %s", ups, param)
                     break
                 ups_metrics.append(UPSMetric(param, ups=ups, labels=self.labels,
