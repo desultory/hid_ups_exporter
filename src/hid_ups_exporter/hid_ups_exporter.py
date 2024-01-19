@@ -23,15 +23,20 @@ class HIDUPSExporter(Exporter):
         self.logger.info("Initializing HID UPS devices.")
         self.close_devices()
         self.ups_list = []
+        self.ups_tasks = []
         for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
             self.ups_list.append(dev)
-            self.app.loop.create_task(dev.mainloop())
+            task = dev.mainloop()
+            self.ups_tasks.append(task)
+            self.app.loop.create_task(task)
 
     def close_devices(self):
+        """ Stop the HID device and its running loop """
         if hasattr(self, 'ups_list'):
             for ups in self.ups_list:
-                self.logger.info("Closing HID UPS device: %s", ups.ups)
-                ups.ups.close()
+                ups.close()
+            for task in self.ups_tasks:
+                task.cancel()
 
     async def get_metrics(self, *args, **kwargs):
         self.metrics = await super().get_metrics(*args, **kwargs)
