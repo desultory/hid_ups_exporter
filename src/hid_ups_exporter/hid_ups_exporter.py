@@ -11,9 +11,11 @@ class HIDUPSExporter(Exporter):
     """
     Exporter for HID USB UPS devices
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, run_forever=False, max_fails=5, *args, **kwargs):
         kwargs['listen_port'] = kwargs.pop('listen_port', 9808)
         super().__init__(*args, **kwargs)
+        self.run_forever = run_forever
+        self.max_fails = max_fails
         self.init_lock = Lock()
         signal(SIGHUP, lambda *args: self.init_devices())
 
@@ -22,7 +24,8 @@ class HIDUPSExporter(Exporter):
         with self.init_lock:
             self.close_devices()
             self.ups_list = []
-            for dev in HIDUPS.get_UPSs(logger=self.logger, _log_bump=10):
+            for dev in HIDUPS.get_UPSs(run_forever=self.run_forever, max_fails=self.max_fails,
+                                       logger=self.logger, _log_bump=10):
                 self.ups_list.append(dev)
                 self.app.loop.create_task(dev.mainloop())
 
@@ -40,12 +43,15 @@ class HIDUPSExporter(Exporter):
         for ups in self.ups_list:
             self.logger.debug("Adding metrics for UPS %s", ups)
             for param in ups.PARAMS:
-                self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels, logger=self.logger, _log_init=False))
+                self.metrics.append(UPSMetric(param, ups=ups, labels=self.labels,
+                                              logger=self.logger, _log_init=False))
         return self.metrics
 
     def read_config(self):
         try:
             super().read_config()
+            self.max_fails = self.config.get('max_fails', 5)
+            self.run_forever = self.config.get('run_forever', False)
         except FileNotFoundError:
             # Config file not needed here
             self.logger.debug('No config file found.')

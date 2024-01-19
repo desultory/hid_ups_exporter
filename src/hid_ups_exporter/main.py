@@ -10,14 +10,18 @@ def main():
 
     argparser.add_argument('-p', '--port', type=int, nargs='?', help='Port to listen on.')
     argparser.add_argument('-a', '--address', type=str, nargs='?', help='Address to listen on.')
+    argparser.add_argument('--run-forever', action='store_true', help='Run forever, even if failing.')
+    argparser.add_argument('--max-failures', type=int, nargs='?', help='Maximum number of failures before killing listener.')
     args = process_args(argparser, logger=logger)
 
-    kwargs = {'logger': logger}
+    kwargs = {'logger': logger, 'run_forever': args.run_forever}
 
     if args.port:
         kwargs['listen_port'] = args.port
     if args.address:
         kwargs['listen_ip'] = args.address
+    if args.max_failures:
+        kwargs['max_failures'] = args.max_failures
 
     exporter = HIDUPSExporter(**kwargs)
     exporter.start()
