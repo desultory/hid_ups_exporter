@@ -18,3 +18,10 @@ depend() {
 start_pre() {  # This dir should be created by the ebuild
 	checkpath -q -d -m 0755 $log_dir
 }
+
+reload() {
+	einfo "Reloading ${RC_SVCNAME}"
+	ebegin "Sending SIGHUP to ${RC_SVCNAME}"
+	start-stop-daemon --signal HUP --pidfile ${pidfile}
+	eend $?
+}
