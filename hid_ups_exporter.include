@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+# Distributed under the terms of the GNU General Public License v2
+
+description="Prometheus hid_ups exporter"
+
+command="hid_ups_exporter"
+command_args="-a 0.0.0.0"  # change if you don't want it listening on all interfaces
+pidfile=${pidfile:-"/run/${RC_SVCNAME}.pid"}
+command_background="true"  # It stays in the foregroupd
+log_dir="/var/log/${RC_SVCNAME}"
+start_stop_daemon_args="--stdout ${log_dir}/${RC_SVCNAME}.log --stderr ${log_dir}/${RC_SVCNAME}.log"
+
+depend() {
+	after net
+}
+
+
+start_pre() {  # This dir should be created by the ebuild
+	checkpath -q -d -m 0755 $log_dir
+}

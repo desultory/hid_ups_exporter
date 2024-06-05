@@ -4,12 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hid_ups_exporter"
-version = "0.5.3"
+version = "1.0.0"
 authors = [
   { name="Desultory", email="dev@pyl.onl" },
 ]
 description = "Export HID UPS stats to Prometheus"
-#readme = "readme.md"
 requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -19,7 +18,7 @@ classifiers = [
 dependencies = [
     "hid_ups >= 0.7.0",
     "prometheus_exporter >= 0.13.2",
-    "zenlib >= 1.7.1"
+    "zenlib >= 2.1.2"
 ]
 
 [project.scripts]
